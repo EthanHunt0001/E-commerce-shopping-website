@@ -1,3 +1,4 @@
+const e = require('express');
 var express = require('express');
 var router = express.Router();
 const productHelpers = require('../helpers/product-helpers');
@@ -22,13 +23,15 @@ router.get('/login',(req,res)=>{
 })
 
 router.get('/signup',(req,res)=>{
-  res.render('user/user-signup');
+  if(req.session.loggedIn==true){
+    res.redirect('/');
+  }else{
+    res.render('user/user-signup');
+  }
 })
 
 router.post('/signup',(req,res)=>{
   userHelpers.doSignUp(req.body).then((response)=>{
-    // console.log(response);
-    // console.log(response.name);
     req.session.loggedIn=true;
     req.session.user=response;
     console.log(req.session.user);
@@ -44,7 +47,7 @@ router.post('/login',(req,res)=>{
       res.redirect('/');
     }else{
       req.session.loginErr="Invalid username or password";
-      res.redirect('/login');             //have to provide the login failed label
+      res.redirect('/login');          
     }
   })
 })
